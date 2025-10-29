@@ -1,11 +1,15 @@
-<script>
-    import { onMount } from "svelte";
-
-
+<script lang="ts">
+import AppBar from "../components/AppBar.svelte";
+import { onMount } from "svelte";
+    import { liveQuery } from "dexie";
+    import {db} from '../utils/db'
+    import Sale from "../components/Sale.svelte";
+    let friends:any
 onMount(async()=>{
-
+    friends = await liveQuery(()=>db.friends.toArray())
+    console.log(friends.getValue())
 })
 </script>
 
-<h1 on:click={()=>alert("hola")}>Welcome to SvelteKit</h1>
-<p>Visit <a href="#/dev">svelte.dev/docs/kit</a> to read the documentation</p>
+ <AppBar/>
+ <Sale/>
