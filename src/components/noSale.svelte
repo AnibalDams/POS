@@ -9,7 +9,7 @@
   <Empty.Media variant="icon">
    <ShoppingBasket />
   </Empty.Media>
-  <Empty.Title>No hay productos en la order</Empty.Title>
+  <Empty.Title>No hay productos en la orden</Empty.Title>
   <Empty.Description>Selecciona algun producto para empezar.</Empty.Description>
  </Empty.Header>
  
