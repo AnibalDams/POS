@@ -4,9 +4,11 @@
     import * as DropdownMenu from "$lib/components/ui/dropdown-menu/index.js";
     import {Button} from "$lib/components/ui/button/index.js";
     import SearchIcon from "@lucide/svelte/icons/search";
+    import toast, { Toaster } from 'svelte-french-toast';
     import {FolderCheck, Banknote, Clock, Settings, DollarSign, Plus, UserRound, Box,RefreshCcw, CreditCard, LayoutDashboard, BanknoteArrowDown, Save } from "@lucide/svelte";
 </script>
 
+<Toaster/>
 <nav>
     <div class="section_1">
         <h4 class="scroll-m-20 text-xl font-semibold tracking-tight">
@@ -45,15 +47,23 @@
     </div>
     <div class="section_2">
         <div class="actions">
-            <Button style="cursor:pointer;"><Plus/>Nueva Venta</Button>
-            <Button style="cursor:pointer; border-color:#f299af;" variant="outline" ><BanknoteArrowDown/>Nuevo gasto</Button>
-            <Button style="cursor:pointer; " variant="outline" ><Save/>Guardar venta</Button>
-            <Button variant="outline" style="cursor:pointer;"><UserRound/>Clientes</Button>
-            <Button variant="outline" style="cursor:pointer;"><Box/>Proveedores</Button>
-            <Button variant="outline" style="cursor:pointer;"><RefreshCcw/>Reembolso</Button>
-            <Button variant="outline" style="cursor:pointer;"><CreditCard/>Metodos de pago</Button>
+            <Button style="cursor:pointer;" onclick={()=>{
+                toast("Esta funcionalidad no se encuentra disponible aún.", {position:"bottom-right"})}}><Plus/>Nueva Venta</Button>
+            <Button style="cursor:pointer;" onclick={()=>{
+                toast("Esta funcionalidad no se encuentra disponible aún.", {position:"bottom-right"})}} ><BanknoteArrowDown/>Nuevo gasto</Button>
+            <Button style="cursor:pointer; " variant="outline" onclick={()=>{
+                toast("Esta funcionalidad no se encuentra disponible aún.", {position:"bottom-right"})}}><Save/>Guardar venta</Button>
+            <Button variant="outline" style="cursor:pointer;" onclick={()=>{
+                toast("Esta funcionalidad no se encuentra disponible aún.", {position:"bottom-right"})}}><UserRound/>Clientes</Button>
+            <Button variant="outline" style="cursor:pointer;" onclick={()=>{
+                toast("Esta funcionalidad no se encuentra disponible aún.", {position:"bottom-right"})}}><Box/>Proveedores</Button>
+            <Button variant="outline" style="cursor:pointer;" onclick={()=>{
+                toast("Esta funcionalidad no se encuentra disponible aún.", {position:"bottom-right"})}}><RefreshCcw/>Reembolso</Button>
+            <Button variant="outline" style="cursor:pointer;" onclick={()=>{
+                toast("Esta funcionalidad no se encuentra disponible aún.", {position:"bottom-right"})}}><CreditCard/>Metodos de pago</Button>
         </div>
-            <Button variant="outline"  style="cursor:pointer;"><LayoutDashboard/>Dashboard</Button>
+            <Button variant="outline"  style="cursor:pointer;" onclick={()=>{
+                toast("Esta funcionalidad no se encuentra disponible aún.", {position:"bottom-right"})}}><LayoutDashboard/>Dashboard</Button>
 
     </div>
 </nav>

@@ -5,6 +5,7 @@
 
     let count = 1
     let price = 13
+   export let stock = 20
 </script>
 
 <div class="card">
@@ -18,10 +19,11 @@
     </div>
 
     <div class="section_3">
-        <ButtonGroup.Root style="display: flex; gap:10px; align-items: center;"> 
+
+        <ButtonGroup.Root style="display: flex; gap:20px; align-items: center;"> 
             <Button variant="outline" style="cursor:pointer;" onclick={()=>count==1?count=1:count--}><Minus/></Button>
             <span style="font-weight: bold;">{count}</span>
-            <Button variant="outline" style="cursor:pointer;" onclick={()=>count++}><Plus/></Button>
+            <Button variant="outline" style="cursor:pointer;" onclick={()=>count==stock?count=stock:count++}><Plus/></Button>
         </ButtonGroup.Root>
     </div>
 </div>
@@ -69,5 +71,5 @@
         justify-content: center;
     }
     
-    
+
     </style>
