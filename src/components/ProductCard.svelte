@@ -9,8 +9,8 @@
     export let code = "13241654542103265"
 </script>
 
-
-<Card.Root>
+<div class="product">
+<Card.Root >
     <Card.Header>
         {#if imgsrc ===""}
             <div style="display: flex; justify-content: center; align-items: center; width: 200px; height: 200px; ">
@@ -32,7 +32,7 @@
         </div>
     </Card.Footer>
 </Card.Root>
-
+</div>
 <style>
     img {
         width: 200px;
@@ -43,5 +43,12 @@
         width: 100%;
         display: flex;
         justify-content: space-between;
+    }
+    .product {
+        cursor: pointer;
+        transition: .2s;
+    }
+    .product:hover {
+        transform: scale(1.05);
     }
 </style>

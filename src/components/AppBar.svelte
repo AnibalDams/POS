@@ -4,7 +4,7 @@
     import * as DropdownMenu from "$lib/components/ui/dropdown-menu/index.js";
     import {Button} from "$lib/components/ui/button/index.js";
     import SearchIcon from "@lucide/svelte/icons/search";
-    import { Banknote, Clock, Settings, DollarSign, Plus, UserRound, Box,RefreshCcw, CreditCard, LayoutDashboard, BanknoteArrowDown, Save } from "@lucide/svelte";
+    import {FolderCheck, Banknote, Clock, Settings, DollarSign, Plus, UserRound, Box,RefreshCcw, CreditCard, LayoutDashboard, BanknoteArrowDown, Save } from "@lucide/svelte";
 </script>
 
 <nav>
@@ -34,6 +34,7 @@
                         <DropdownMenu.Label> My Account</DropdownMenu.Label>
                         <DropdownMenu.Separator />
                         <DropdownMenu.Item style="cursor:pointer;"><Clock/>Resumen del dia</DropdownMenu.Item>
+                        <DropdownMenu.Item style="cursor:pointer;"><FolderCheck/>Ver ventas guardadas</DropdownMenu.Item>
                         <DropdownMenu.Item style="cursor:pointer;"><Settings/>Configuraciones</DropdownMenu.Item>
                         <DropdownMenu.Item style="color:red; cursor:pointer;"><DollarSign color="red"/> Cerrar caja</DropdownMenu.Item>
 
