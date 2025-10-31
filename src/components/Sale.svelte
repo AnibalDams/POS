@@ -8,7 +8,9 @@
     import SaleProcducCard from "./SaleProcducCard.svelte";
     import { CreditCard } from "@lucide/svelte";
     import NoSale from "./noSale.svelte";
-    let sale = false;
+    import toast, { Toaster } from 'svelte-french-toast';
+
+
     let categorySelected = "Todo";
     let categories = [
         "Todo",
@@ -17,8 +19,63 @@
         "Panaderia",
         "Electronica",
     ];
-</script>
+    let products = [{name:"Airpods", code:"arpd", image:"https://m.media-amazon.com/images/I/61CmrrKebAL.jpg", price:24, stock:20}, {name:"Samsung Galaxy s22", code:"smgs22", image:"https://images.samsung.com/is/image/samsung/p6pim/ar/sm-s731bzwmaro/gallery/ar-galaxy-s25-fe-sm-s731-sm-s731bzwmaro-thumb-549272976", price:240, stock:12}]
+    let sale = [];
+    $: subtotal = sale.reduce((sum, item) => sum + (item.product.price * item.amount), 0);
+    $: IVA = subtotal * 0.16;
+    $: total = subtotal + IVA;
+    // Función para añadir o actualizar un producto en la venta
+    function addOrUpdateProduct(productToAdd) {
+        let found = false;
+        // Creamos una copia del array para poder reasignarlo
+        let updatedSale = [...sale]; 
 
+        for (let i = 0; i < updatedSale.length; i++) {
+            const element = updatedSale[i];
+            if (element.product.name === productToAdd.name) {
+                if (element.amount >= element.product.stock) {
+                    toast.error("No hay mas stock disponible de este producto.",{
+                        position:"bottom-right"
+                    })
+                }else{
+                updatedSale[i].amount++;
+
+                }
+                found = true;
+                break; // Salimos del bucle una vez que encontramos el producto
+            }
+        }
+
+        if (!found) {
+            updatedSale.push({ product: productToAdd, amount: 1 });
+        }
+        
+        // Reasignamos la variable sale para que Svelte detecte el cambio
+        sale = updatedSale; 
+    }
+    function updateAmount(productToUpdate, type) {
+        let updatedSale = [...sale];
+
+        if(type =="+"){
+            if(updatedSale[productToUpdate].amount >= updatedSale[productToUpdate].product.stock){
+                toast.error("No hay mas stock disponible de este producto.",{position:"bottom-right"})
+            }else{
+                updatedSale[productToUpdate].amount++;
+            }
+
+        }else{
+            updatedSale[productToUpdate].amount == 1?1:updatedSale[productToUpdate].amount--;
+        }
+        sale = updatedSale
+    }
+    function deleteProduct(productToDelete){
+        let updatedSale = [...sale]
+        updatedSale.splice(productToDelete, 1)
+        sale = updatedSale
+        
+    }
+</script>
+<Toaster/>
 <div class="sale">
     <div class="products">
         <div class="categories">
@@ -41,25 +98,17 @@
             </div>
         </div>
         <div class="products_grid">
-            <ProductCard />
-            <ProductCard
-                code="arpd"
-                name="AirPods 2025"
-                imgsrc="https://m.media-amazon.com/images/I/61CmrrKebAL.jpg"
+         {#each products as product}
+               <ProductCard
+                onclick={() => addOrUpdateProduct(product)}
+                code={product.code}
+                price={product.price}
+                stock={product.stock}
+                name={product.name}
+                imgsrc={product.image}
             />
-            <ProductCard
-                price={100}
-                stock={15}
-                imgsrc="https://www.titaniccenter.com/cdn/shop/files/Celular_Spark_40_Pro_Plus_8GB256GB_Nebula_Black_Tecno.jpg?v=1757163428&width=4000"
-            />
-            <ProductCard stock={200} />
-            <ProductCard />
-            <ProductCard />
-            <ProductCard />
-            <ProductCard />
-            <ProductCard />
-            <ProductCard />
-            <ProductCard />
+
+         {/each}
         </div>
     </div>
     <div class="summary">
@@ -69,36 +118,35 @@
                     <ShoppingCart size={20} />
                     <span>Resumen de la orden actual</span>
                 </div>
-                <Button variant="ghost" style="color:red; cursor:pointer;"
+                {#if sale.length >0}
+                    <Button variant="ghost" onclick={()=>{
+                    sale = []
+                }} style="color:red; cursor:pointer;"
                     ><X /> Cancelar</Button
                 >
+                {/if}
             </div>
-            <InputGroup.Root>
-                <InputGroup.Input placeholder="Cliente (opcional)" />
-                <InputGroup.Addon>
-                    <UserRound />
-                </InputGroup.Addon>
-            </InputGroup.Root>
+            <Button variant="outline" style="cursor:pointer;width:100%;"><UserRound />Cliente (Opcional)</Button>
         </div>
 
         <div class="sale_products">
-            {#if !sale}
+            {#if sale.length === 0} <!-- Verifica la longitud del array -->
                 <NoSale />
             {:else}
-                <SaleProcducCard />
-                <SaleProcducCard />
-                <SaleProcducCard />
+            {#each sale as productSale, index }
+                <SaleProcducCard index={index} deleteProduct={deleteProduct} updateAmount={updateAmount} count={productSale.amount} name={productSale.product.name} price={productSale.product.price} stock={productSale.product.stock}/>
+            {/each}
             {/if}
         </div>
         <div class="amounts">
             <div class="section_1">
                 <div class="item">
                     <span>Subtotal</span>
-                    <span>200$</span>
+                    <span>{Number(subtotal).toFixed(2)}$</span>
                 </div>
                 <div class="item">
                     <span>IVA</span>
-                    <span>16$</span>
+                    <span>{Number(IVA).toFixed(2)}$</span>
                 </div>
                 <div class="item">
                     <span>Descuento</span>
@@ -112,14 +160,14 @@
                 <div class="total">
                     <span
                         class="scroll-m-20 text-xl font-semibold tracking-tight"
-                        style="color:#21a1fc;">$216</span
+                        style="color:#21a1fc;">{Number(total).toFixed(2)}$</span
                     >
                 </div>
             </div>
             <div
                 style="display: flex; justify-content:flex-end; padding-right:20px;"
             >
-                <span class="text-muted-foreground text-sm"> 5 productos</span>
+                <span class="text-muted-foreground text-sm"> {sale.length} {sale.length > 1 ? "productos" : "producto"}</span>
             </div>
         </div>
         <Dialog.Root>
@@ -194,13 +242,6 @@
         margin-top: 20px;
         border-top: 1px solid #dddddd;
         padding-bottom: 15px;
-    }
-    .summary .amounts .section_1 {
-        padding: 20px;
-        display: flex;
-        flex-direction: column;
-        gap: 5px;
-        border-bottom: 1px solid #ddd;
     }
     div.amounts .section_1 .item {
         display: flex;

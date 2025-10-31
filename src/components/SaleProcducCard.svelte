@@ -2,28 +2,41 @@
     import {Trash,Minus,Plus} from "@lucide/svelte"
     import { Button } from "$lib/components/ui/button/index.js";
     import * as ButtonGroup from "$lib/components/ui/button-group/index.js";
-
-    let count = 1
-    let price = 13
+    export let index
+    export let name =""
+    export let count = 1
+    export let price = 13
    export let stock = 20
+   export let updateAmount
+   export let deleteProduct
 </script>
 
 <div class="card">
     <div class="section_1">
-        <span class="name">Bolsa 2k</span>
+        <span class="name">{name}</span>
         <span class="price">{count*price}$</span>
     </div>
     <div class="section_2">
         <span class="price">{price}$</span>
-        <Button variant="ghost" style="cursor:pointer;"><Trash color="red"/></Button>
+        <Button variant="ghost" style="cursor:pointer;" onclick={()=>{
+            deleteProduct(index)
+        }}><Trash color="red"/></Button>
     </div>
 
     <div class="section_3">
 
         <ButtonGroup.Root style="display: flex; gap:20px; align-items: center;"> 
-            <Button variant="outline" style="cursor:pointer;" onclick={()=>count==1?count=1:count--}><Minus/></Button>
+            <Button variant="outline" style="cursor:pointer;" onclick={()=>{
+                
+                 count==1?count=1:count--
+                updateAmount(index, "-")
+                
+                }}><Minus/></Button>
             <span style="font-weight: bold;">{count}</span>
-            <Button variant="outline" style="cursor:pointer;" onclick={()=>count==stock?count=stock:count++}><Plus/></Button>
+            <Button variant="outline" style="cursor:pointer;" onclick={()=>{
+                count==stock?count=stock:count++
+                updateAmount(index, "+")
+                }}><Plus/></Button>
         </ButtonGroup.Root>
     </div>
 </div>

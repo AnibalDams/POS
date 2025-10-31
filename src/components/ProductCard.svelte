@@ -7,9 +7,10 @@
     export let price = 200
     export let name = "Doritos con asa de 2k"
     export let code = "13241654542103265"
+    export let onclick = ()=> {return}
 </script>
 
-<div class="product">
+<div class="product" on:click={onclick}>
 <Card.Root >
     <Card.Header>
         {#if imgsrc ===""}
@@ -45,6 +46,7 @@
         justify-content: space-between;
     }
     .product {
+        width: 250px;
         cursor: pointer;
         transition: .2s;
     }
