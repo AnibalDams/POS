@@ -48,7 +48,6 @@
         border-radius: 10px;
         width: 100%;
         padding: 20px;
-        cursor: pointer;
         transition: 0.2s;
     }
     .card:hover{

@@ -4,7 +4,7 @@
  import {ShoppingBasket} from '@lucide/svelte'
 </script>
  
-<Empty.Root>
+<Empty.Root style="height: 500px;">
  <Empty.Header>
   <Empty.Media variant="icon">
    <ShoppingBasket />
@@ -14,3 +14,4 @@
  </Empty.Header>
  
 </Empty.Root>
+
