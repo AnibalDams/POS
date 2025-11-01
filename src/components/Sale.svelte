@@ -61,6 +61,7 @@
             stock: 14,
         },
     ];
+    let paymMedthod = [{type:"CreditCard", name:"Tarjeta de credito"},{type:"cash", name:"Efectivo"}, {type:"Phone", name:"Pago Movil"}, {type:"Finger",name:"Biopago"}]
     let preSale = [];
     let sale = [];
     let paid = false;
@@ -349,10 +350,11 @@
                                     <div
                                         style="display: grid;grid-template-columns: repeat(auto-fit, minmax(138px, 1fr)); "
                                     >
-                                        <PaymentMethodButton />
-                                        <PaymentMethodButton />
-                                        <PaymentMethodButton />
-                                        <PaymentMethodButton />
+                                    {#each paymMedthod as payM}
+                                    <PaymentMethodButton  text={payM.name} payType={payM.type}/>
+                                        
+                                    {/each}
+                                        
                                     </div>
                                 </div>
                                 <div class="amount_form">

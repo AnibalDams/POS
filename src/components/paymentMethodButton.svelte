@@ -1,14 +1,29 @@
-<script>
-    import {CreditCard} from "@lucide/svelte"
+<script lang="ts">
+    import {CreditCard, Banknote, QrCode, Phone, Fingerprint} from "@lucide/svelte"
     
     //
+    type type = "CreditCard" | "cash" | "QrCode" | "Phone" | "Finger"
+    export let payType:type = "CreditCard"
+    export let text = "Tarjeta de credito"
+
     
 </script>
 
 
 <button>
-<CreditCard/>
-Tarjeta de credito
+{#if payType == "CreditCard"}
+    <CreditCard/>
+    {:else if payType == "cash"}
+        <Banknote/>
+    {:else if payType == "QrCode"}
+        <QrCode/>
+    {:else if payType == "Phone"}
+        <Phone/>
+    {:else if payType == "Finger"}
+        <Fingerprint/>
+   
+{/if}
+{text}
 </button>
 
 
