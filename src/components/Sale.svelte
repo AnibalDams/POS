@@ -133,15 +133,18 @@
     function addPayment() {
         let updatedPayments = [...payments];
 
-        if (pay_amount_f > total) {
+        if (pay_amount_f > total ) {
             toast.error("El monto excede el total de la venta", {position:"bottom-right"});
         } else {
+            if(sale[0].amount < total){
             updatedPayments[0].amount += Number(pay_amount_f);
             updatedPayments[1].push({
                 amount: pay_amount_f,
                 name: "credit card",
             });
             payments = updatedPayments;
+            }
+
         }
         if (payments[0].amount == total) {
             preSale = sale;
@@ -294,6 +297,9 @@
                 onOpenChange={() => {
                     if (paid == true) {
                         sale = [];
+                        total = 0
+                        IVA = 0
+                        subtotal = 0
                         pay_amount_f= total
                         paid = false;
                     }
