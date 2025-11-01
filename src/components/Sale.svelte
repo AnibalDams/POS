@@ -1,6 +1,6 @@
 <script>
     import ProductCard from "./ProductCard.svelte";
-    import { ShoppingCart, UserRound, X } from "@lucide/svelte";
+    import { BadgeCheck, Plus, ShoppingCart, User, UserRound, X } from "@lucide/svelte";
     import * as InputGroup from "$lib/components/ui/input-group/index.js";
     import * as Dialog from "$lib/components/ui/dialog/index.js";
     import { Button, buttonVariants } from "$lib/components/ui/button/index.js";
@@ -10,6 +10,7 @@
     import NoSale from "./noSale.svelte";
     import toast, { Toaster } from "svelte-french-toast";
     import PaymentMethodButton from "./paymentMethodButton.svelte";
+    import * as Popover  from "$lib/components/ui/popover/index.js";
 
     let categorySelected = "Todo";
     let categories = [
@@ -41,20 +42,23 @@
             stock: 50,
         },
         {
-            name:"Lpunto pro",
-            image:"https://www.latin-pagos.com/web/image/427644-8a73fe61/004.jpg",
-            price:120,
-            stock:38
+            name: "Lpunto pro",
+            image: "https://www.latin-pagos.com/web/image/427644-8a73fe61/004.jpg",
+            price: 120,
+            stock: 38,
         },
-        
     ];
+    let preSale = []
     let sale = [];
+    let paid = false
+    let payments = [{amount:0},[]]
     $: subtotal = sale.reduce(
         (sum, item) => sum + item.product.price * item.amount,
         0,
     );
     $: IVA = subtotal * 0.16;
     $: total = subtotal + IVA;
+    let pay_amount_f = total
     // Función para añadir o actualizar un producto en la venta
     function addOrUpdateProduct(productToAdd) {
         let found = false;
@@ -112,6 +116,19 @@
         updatedSale.splice(productToDelete, 1);
         sale = updatedSale;
     }
+    function addPayment(){
+        let updatedPayments = [...payments]
+        updatedPayments[0].amount += Number(pay_amount_f)
+        updatedPayments[1].push({amount:pay_amount_f, name:"credit card"})
+        payments = updatedPayments
+        pay_amount_f = 0
+
+        if(payments[0].amount >= total){
+            preSale = sale
+            paid = true
+        }
+        console.log(payments)
+    }
 </script>
 
 <Toaster />
@@ -161,15 +178,29 @@
                         variant="ghost"
                         onclick={() => {
                             sale = [];
+                            payments = [{amount:0},[]]
+                            paid = false
                         }}
                         style="color:red; cursor:pointer;"
                         ><X /> Cancelar</Button
                     >
                 {/if}
             </div>
-            <Button variant="outline" style="cursor:pointer;width:100%;"
-                ><UserRound />Cliente (Opcional)</Button
-            >
+            <Popover.Root>
+                <Popover.Trigger class={buttonVariants({ variant: "outline" })} style="cursor:pointer;width:100%; widith:800px;"><UserRound />Cliente (Opcional)</Popover.Trigger>
+                <Popover.Content>
+                    <div class="customer_form">
+                         <InputGroup.Root>
+                            <InputGroup.Addon><UserRound /></InputGroup.Addon>
+                                    <InputGroup.Input
+                                        placeholder="Busca a un cliente"
+                                    />
+                                </InputGroup.Root>
+                                <Button variant="outline" style="width:100%; cursor:pointer;"><Plus /> Agregar cliente</Button>
+                    </div>
+                </Popover.Content>
+            </Popover.Root>
+            
         </div>
 
         <div class="sale_products">
@@ -230,7 +261,13 @@
                 </div>
             </div>
 
-            <Dialog.Root>
+            <Dialog.Root onOpenChange={()=>{
+                if (paid == true) {
+                    sale = []
+                    payments = [{amount:0},[]]
+                    paid = false
+                }
+            }}>
                 <Dialog.Trigger
                     style="cursor:pointer;"
                     class={buttonVariants({ variant: "default" })}
@@ -240,7 +277,8 @@
                     <Dialog.Header>
                         <Dialog.Title>Procesar pago</Dialog.Title>
                         <Dialog.Description>
-                            <div class="amount_details">
+                            {#if paid == false}
+                                                        <div class="amount_details">
                                 <div class="section">
                                     <span>Articulos:</span>
                                     <span>{sale.length}</span>
@@ -258,21 +296,54 @@
                                     <span>0$</span>
                                 </div>
                             </div>
-                            <div class="amount_details" style="border:none;padding-top:10px;">
+                            <div
+                                class="amount_details"
+                                style="border:none;padding-top:10px;"
+                            >
                                 <div class="section">
-                                    <span style="font-weight: bold; font-size:1.2rem; color:#111;">Total</span>
+                                    <span
+                                        style="font-weight: bold; font-size:1.2rem; color:#111;"
+                                        >Total a pagar</span
+                                    >
                                     <span>{Number(total).toFixed(2)}$</span>
                                 </div>
                             </div>
                             <div class="payment_method">
-                                <span style="color:#222; font-weight:bold;">Metodo de pago</span>
-                               <div style="display: grid;grid-template-columns: repeat(auto-fit, minmax(138px, 1fr)); "> 
-                                 <PaymentMethodButton/>
-                                 <PaymentMethodButton/>
-                                 <PaymentMethodButton/>
-                                 <PaymentMethodButton/>
-                               </div>
+                                <span style="color:#222; font-weight:bold;"
+                                    >Metodo de pago</span
+                                >
+                                <div
+                                    style="display: grid;grid-template-columns: repeat(auto-fit, minmax(138px, 1fr)); "
+                                >
+                                    <PaymentMethodButton />
+                                    <PaymentMethodButton />
+                                    <PaymentMethodButton />
+                                    <PaymentMethodButton />
+                                </div>
                             </div>
+                            <div class="amount_form">
+                                <span
+                                    style="display: inline-block; color:#222; font-weight:bold; margin-top:10px; margin-bottom:10px;"
+                                    >Monto</span
+                                >
+                                <InputGroup.Root>
+                                    <InputGroup.Input
+                                        placeholder={total}
+                                        type="number"
+                                        bind:value={pay_amount_f}
+                                    />
+                                </InputGroup.Root>
+                            </div>
+                            <div class="buttons" >
+                                <Button style="cursor:pointer; width:100%;" onclick={addPayment}><BadgeCheck/> Agregar pago</Button>
+                                <Dialog.Close
+                                    style="cursor:pointer; width:100%;"
+                                    class={buttonVariants({
+                                        variant: "outline",
+                                    })}>Cancelar</Dialog.Close
+                                >
+                            </div>
+                            {/if}
                         </Dialog.Description>
                     </Dialog.Header>
                 </Dialog.Content>
@@ -371,9 +442,25 @@
         font-size: 14px;
         color: #555555;
     }
-    .payment_method{
+    .payment_method {
         display: flex;
         flex-direction: column;
         gap: 10px;
+    }
+    .buttons{
+
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        align-items: center;
+        justify-content: center;
+        margin-top:20px;
+    }
+    .customer_form{
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+    
     }
 </style>
