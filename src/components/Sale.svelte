@@ -18,7 +18,10 @@
     import toast, { Toaster } from "svelte-french-toast";
     import PaymentMethodButton from "./paymentMethodButton.svelte";
     import * as Popover from "$lib/components/ui/popover/index.js";
+    import PayDone from "./payDone.svelte";
+    import * as Tooltip from "$lib/components/ui/tooltip/index.js";
 
+    let currency_tax = 223.96;
     let categorySelected = "Todo";
     let categories = [
         "Todo",
@@ -27,6 +30,7 @@
         "Panaderia",
         "Electronica",
     ];
+
     let products = [
         {
             name: "Airpods",
@@ -61,7 +65,16 @@
             stock: 14,
         },
     ];
-    let paymMedthod = [{type:"CreditCard", name:"Tarjeta de credito"},{type:"cash", name:"Efectivo"}, {type:"Phone", name:"Pago Movil"}, {type:"Finger",name:"Biopago"}]
+    let paymMedthod = [
+        { type: "CreditCard", name: "Tarjeta de credito" },
+        { type: "cash", name: "Efectivo" },
+        { type: "Phone", name: "Pago Movil" },
+        { type: "Finger", name: "Biopago" },
+    ];
+    let pay_selected = paymMedthod[0].name;
+    let subtotal = 0;
+    let IVA = 0;
+    let total = 0;
     let preSale = [];
     let sale = [];
     let paid = false;
@@ -72,7 +85,14 @@
     );
     $: IVA = subtotal * 0.16;
     $: total = subtotal + IVA;
+    let restSale = Number(total);
     let pay_amount_f = total;
+    $: {
+        restSale = total;
+        if (payments[0].amount > 0) {
+            restSale = total - payments[0].amount;
+        }
+    }
     // Función para añadir o actualizar un producto en la venta
     function addOrUpdateProduct(productToAdd) {
         let found = false;
@@ -132,26 +152,48 @@
     }
     function addPayment() {
         let updatedPayments = [...payments];
+        const paymentAmount = parseFloat(pay_amount_f); // Asegurarse de que es un número
 
-        if (pay_amount_f > total ) {
-            toast.error("El monto excede el total de la venta", {position:"bottom-right"});
-        } else {
-            if(sale[0].amount < total){
-            updatedPayments[0].amount += Number(pay_amount_f);
-            updatedPayments[1].push({
-                amount: pay_amount_f,
-                name: "credit card",
+        if (isNaN(paymentAmount) || paymentAmount <= 0) {
+            toast.error("Por favor, introduce un monto de pago válido.", {
+                position: "bottom-right",
             });
-            payments = updatedPayments;
-            }
-
+            return;
         }
-        if (payments[0].amount == total) {
+
+        const EPSILON = 0.001; // Un pequeño margen para comparaciones de flotantes
+
+        if (paymentAmount > restSale + EPSILON) {
+            toast.error("El monto excede el total restante de la venta.", {
+                position: "bottom-right",
+            });
+            return;
+        }
+
+        updatedPayments[0].amount += paymentAmount;
+        updatedPayments[1].push({
+            amount: paymentAmount,
+            name: pay_selected,
+            date: new Date().toISOString(),
+        });
+
+        restSale = parseFloat((restSale - paymentAmount).toFixed(2)); // Restamos y redondeamos para precisión
+
+        payments = updatedPayments;
+        pay_amount_f = 0; // Limpiar el input después del pago
+
+        if (restSale < EPSILON) {
+            // Si restSale es muy cercano a cero, considera que se ha pagado completamente
             preSale = sale;
             payments = [{ amount: 0 }, []];
             paid = true;
+            toast.success("¡Venta completada exitosamente!", {
+                position: "bottom-right",
+            });
         }
-        console.log(payments);
+
+        console.log("Pagos:", payments);
+        console.log("Restante por pagar:", restSale);
     }
 </script>
 
@@ -203,7 +245,7 @@
                         onclick={() => {
                             sale = [];
                             payments = [{ amount: 0 }, []];
-                            pay_amount_f =0;
+                            pay_amount_f = 0;
                             paid = false;
                         }}
                         style="color:red; cursor:pointer;"
@@ -276,11 +318,24 @@
                         Total
                     </span>
                     <div class="total">
-                        <span
-                            class="scroll-m-20 text-xl font-semibold tracking-tight"
-                            style="color:#21a1fc;"
-                            >{Number(total).toFixed(2)}$</span
-                        >
+                        <Tooltip.Provider>
+                            <Tooltip.Root>
+                                <Tooltip.Trigger
+                                    class="scroll-m-20 text-xl font-semibold tracking-tight"
+                                    style="color:#21a1fc;"
+                                    >{Number(total).toFixed(
+                                        2,
+                                    )}$</Tooltip.Trigger
+                                >
+                                <Tooltip.Content>
+                                    <p>
+                                        Bs {Number(total * currency_tax).toFixed(
+                                            2,
+                                        )}
+                                    </p>
+                                </Tooltip.Content>
+                            </Tooltip.Root>
+                        </Tooltip.Provider>
                     </div>
                 </div>
                 <div
@@ -297,11 +352,13 @@
                 onOpenChange={() => {
                     if (paid == true) {
                         sale = [];
-                        total = 0
-                        IVA = 0
-                        subtotal = 0
-                        pay_amount_f= total
+                        total = 0;
+                        IVA = 0;
+                        subtotal = 0;
+                        pay_amount_f = total;
                         paid = false;
+                        restSale = 0;
+                        payments = [{ amount: 0 }, []];
                     }
                 }}
             >
@@ -310,9 +367,14 @@
                     class={buttonVariants({ variant: "default" })}
                     ><CreditCard /> Procesar pago</Dialog.Trigger
                 >
-                <Dialog.Content>
+
+                <Dialog.Content class="max-h-[90vh] overflow-auto">
                     <Dialog.Header>
-                        <Dialog.Title>{!paid?"Procesar pago":"Recibo de pago"}</Dialog.Title>
+                        <Dialog.Title
+                            >{!paid
+                                ? "Procesar pago"
+                                : "Recibo de pago"}</Dialog.Title
+                        >
                         <Dialog.Description>
                             {#if paid == false}
                                 <div class="amount_details">
@@ -348,6 +410,40 @@
                                         >
                                         <span>{Number(total).toFixed(2)}$</span>
                                     </div>
+                                    <div class="section">
+                                        <span
+                                            style="font-weight: bold; font-size:1.2rem; color:#119c16;"
+                                            >Restante</span
+                                        >
+                                        <span style="color:#119c16;"
+                                            >{Number(restSale).toFixed(
+                                                2,
+                                            )}$</span
+                                        >
+                                    </div>
+                                </div>
+                                <div class="pays_done">
+                                    {#if payments[1].length > 0}
+                                        <span
+                                            style="font-weight: bold; color:#222;"
+                                            >Pagos realizados</span
+                                        >
+                                        {#each payments[1] as payment, index}
+                                            <PayDone
+                                                name={payment.name}
+                                                amount={payment.amount}
+                                                onDelete={() => {
+                                                    payments[0].amount -=
+                                                        payment.amount;
+                                                    payments[1].splice(
+                                                        index,
+                                                        1,
+                                                    );
+                                                    restSale += payment.amount;
+                                                }}
+                                            />
+                                        {/each}
+                                    {/if}
                                 </div>
                                 <div class="payment_method">
                                     <span style="color:#222; font-weight:bold;"
@@ -356,11 +452,19 @@
                                     <div
                                         style="display: grid;grid-template-columns: repeat(auto-fit, minmax(138px, 1fr)); "
                                     >
-                                    {#each paymMedthod as payM}
-                                    <PaymentMethodButton  text={payM.name} payType={payM.type}/>
-                                        
-                                    {/each}
-                                        
+                                        {#each paymMedthod as payM}
+                                            <PaymentMethodButton
+                                                text={payM.name}
+                                                payType={payM.type}
+                                                selected={pay_selected ==
+                                                payM.name
+                                                    ? true
+                                                    : false}
+                                                onClick={() => {
+                                                    pay_selected = payM.name;
+                                                }}
+                                            />
+                                        {/each}
                                     </div>
                                 </div>
                                 <div class="amount_form">

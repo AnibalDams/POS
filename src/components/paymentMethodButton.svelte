@@ -5,12 +5,13 @@
     type type = "CreditCard" | "cash" | "QrCode" | "Phone" | "Finger"
     export let payType:type = "CreditCard"
     export let text = "Tarjeta de credito"
-
+    export let onClick
+    export let selected
     
 </script>
 
 
-<button>
+<button style={`border-color:${selected?"rgb(82, 174, 250)":"rgb(224, 224, 224)"}`} on:click={onClick}>
 {#if payType == "CreditCard"}
     <CreditCard/>
     {:else if payType == "cash"}
