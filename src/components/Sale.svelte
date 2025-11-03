@@ -484,6 +484,7 @@
                                     <Button
                                         style="cursor:pointer; width:100%;"
                                         onclick={addPayment}
+                                        disabled={pay_amount_f ==0 || !pay_amount_f}
                                         ><BadgeCheck /> Agregar pago</Button
                                     >
                                     <Dialog.Close

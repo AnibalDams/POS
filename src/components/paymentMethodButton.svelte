@@ -1,5 +1,5 @@
 <script lang="ts">
-    import {CreditCard, Banknote, QrCode, Phone, Fingerprint} from "@lucide/svelte"
+    import {CreditCard, Banknote, QrCode, Phone, Fingerprint, Smartphone} from "@lucide/svelte"
     
     //
     type type = "CreditCard" | "cash" | "QrCode" | "Phone" | "Finger"
@@ -19,7 +19,7 @@
     {:else if payType == "QrCode"}
         <QrCode/>
     {:else if payType == "Phone"}
-        <Phone/>
+        <Smartphone/>
     {:else if payType == "Finger"}
         <Fingerprint/>
    
