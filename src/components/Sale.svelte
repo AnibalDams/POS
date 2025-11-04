@@ -4,7 +4,7 @@
         BadgeCheck,
         Plus,
         ShoppingCart,
-        User,
+        
         UserRound,
         X,
     } from "@lucide/svelte";
