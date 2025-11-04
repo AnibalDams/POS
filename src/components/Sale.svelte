@@ -20,7 +20,23 @@
     import * as Popover from "$lib/components/ui/popover/index.js";
     import PayDone from "./payDone.svelte";
     import * as Tooltip from "$lib/components/ui/tooltip/index.js";
+    import SaleReciept from "./SaleReciept.svelte";
 
+    let nowDate;
+
+    const settings = {
+        day: "numeric",
+        month: "numeric",
+        year: "numeric",
+        hour: "numeric",
+        minute: "numeric",
+        second: "numeric",
+        hour12: true, // Usa formato de 12 horas con a.m./p.m.
+    };
+
+    $: formattedDate = new Intl.DateTimeFormat("es-ES", settings).format(
+        nowDate,
+    );
     let currency_tax = 223.96;
     let categorySelected = "Todo";
     let categories = [
@@ -89,6 +105,8 @@
     let pay_amount_f = total;
     $: {
         restSale = total;
+        nowDate = new Date();
+
         if (payments[0].amount > 0) {
             restSale = total - payments[0].amount;
         }
@@ -164,9 +182,12 @@
         const EPSILON = 0.001; // Un pequeño margen para comparaciones de flotantes
 
         if (paymentAmount > restSale + EPSILON) {
-            toast.error("El monto excede el total restante de la venta.", {
-                position: "bottom-right",
-            });
+            toast.error(
+                `El monto excede el total restante de la venta. El cual es de ${Number(restSale).toFixed(2)}$`,
+                {
+                    position: "bottom-right",
+                },
+            );
             return;
         }
 
@@ -176,6 +197,7 @@
             name: pay_selected,
             date: new Date().toISOString(),
         });
+        nowDate = new Date();
 
         restSale = parseFloat((restSale - paymentAmount).toFixed(2)); // Restamos y redondeamos para precisión
 
@@ -185,7 +207,8 @@
         if (restSale < EPSILON) {
             // Si restSale es muy cercano a cero, considera que se ha pagado completamente
             preSale = sale;
-            payments = [{ amount: 0 }, []];
+            
+            nowDate = new Date();
             paid = true;
             toast.success("¡Venta completada exitosamente!", {
                 position: "bottom-right",
@@ -329,9 +352,9 @@
                                 >
                                 <Tooltip.Content>
                                     <p>
-                                        Bs {Number(total * currency_tax).toFixed(
-                                            2,
-                                        )}
+                                        Bs {Number(
+                                            total * currency_tax,
+                                        ).toFixed(2)}
                                     </p>
                                 </Tooltip.Content>
                             </Tooltip.Root>
@@ -359,6 +382,7 @@
                         paid = false;
                         restSale = 0;
                         payments = [{ amount: 0 }, []];
+                        nowDate = new Date();
                     }
                 }}
             >
@@ -484,7 +508,8 @@
                                     <Button
                                         style="cursor:pointer; width:100%;"
                                         onclick={addPayment}
-                                        disabled={pay_amount_f ==0 || !pay_amount_f}
+                                        disabled={pay_amount_f == 0 ||
+                                            !pay_amount_f}
                                         ><BadgeCheck /> Agregar pago</Button
                                     >
                                     <Dialog.Close
@@ -494,12 +519,32 @@
                                         })}>Cancelar</Dialog.Close
                                     >
                                 </div>
+                            {:else}
+                                <SaleReciept
+                                    date={formattedDate}
+                                    total={Number(total).toFixed(2)}
+                                    subtotal={Number(subtotal).toFixed(2)}
+                                    IVA={Number(IVA).toFixed(2)}
+                                    products={sale}
+                                    payments={payments[1]}
+                                    onFinish={()=>{
+                                        sale=[]
+                                        total=0
+                                        IVA=0
+                                        subtotal=0
+                                        payments= [{amount:0},[]],
+                                        paid=false
+                                        restSale=0
+                                        nowDate=new Date()
+
+                                    }}
+                                />
                             {/if}
                         </Dialog.Description>
                     </Dialog.Header>
                 </Dialog.Content>
             </Dialog.Root>
-        {/if}
+        {:else}{/if}
     </div>
 </div>
 
