@@ -56,7 +56,9 @@
           {/each}
         </div>
         <div class="actions">
-            <Button style="width:calc(100%/2); cursor:pointer;" variant="outline"><Download/>Descargar</Button>
+            <Button style="width:calc(100%/2); cursor:pointer;" variant="outline" onclick={()=>{
+                window.print()
+            }}><Download/>Descargar</Button>
             
             <Button style="width:calc(100%/2); cursor:pointer;" onclick={onFinish}><Check/>Finalizar</Button>
         </div>

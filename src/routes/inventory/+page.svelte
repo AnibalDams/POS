@@ -1,4 +1,5 @@
 <script>
+    import AppBar from "../../components/AppBar.svelte";
   import { db } from "../../utils/db";
     import { onMount } from "svelte";
 
@@ -32,5 +33,5 @@
     await addFriend()
   })
 </script>
-
+<AppBar/>
 <h1>hola</h1> <a href="#/">dasdsa</a>

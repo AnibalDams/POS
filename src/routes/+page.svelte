@@ -1,5 +1,4 @@
 <script lang="ts">
-import AppBar from "../components/AppBar.svelte";
 import { onMount } from "svelte";
     import { liveQuery } from "dexie";
     import {db} from '../utils/db'
@@ -11,5 +10,4 @@ onMount(async()=>{
 })
 </script>
 
- <AppBar/>
  <Sale/>

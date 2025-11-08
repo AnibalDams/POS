@@ -5,7 +5,11 @@
     import {Button} from "$lib/components/ui/button/index.js";
     import SearchIcon from "@lucide/svelte/icons/search";
     import toast, { Toaster } from 'svelte-french-toast';
-    import {FolderCheck, Banknote, Clock, Settings, DollarSign, Plus, UserRound, Box,RefreshCcw, CreditCard, LayoutDashboard, BanknoteArrowDown, Save } from "@lucide/svelte";
+    import {Album,FolderCheck, Banknote, Clock, Settings, DollarSign, Plus, UserRound, Box,RefreshCcw, CreditCard, LayoutDashboard, BanknoteArrowDown, Save } from "@lucide/svelte";
+    import { goto } from "$app/navigation";
+    
+    export let saveSale =()=>{}
+    export let sale = false
 </script>
 
 <Toaster/>
@@ -51,14 +55,28 @@
                 toast("Esta funcionalidad no se encuentra disponible aún.", {position:"bottom-right"})}}><Plus/>Nueva Venta</Button>
             <Button style="cursor:pointer;" onclick={()=>{
                 toast("Esta funcionalidad no se encuentra disponible aún.", {position:"bottom-right"})}} ><BanknoteArrowDown/>Nuevo gasto</Button>
-            <Button style="cursor:pointer; " variant="outline" onclick={()=>{
-                toast("Esta funcionalidad no se encuentra disponible aún.", {position:"bottom-right"})}}><Save/>Guardar venta</Button>
-            <Button variant="outline" style="cursor:pointer;" onclick={()=>{
+           
+           {#if sale}
+            
+           <Button style="cursor:pointer; " variant="outline" onclick={async()=>{await saveSale()}}><Save/>Guardar venta</Button>
+           {/if}
+           
+           
+           <Button variant="outline" style="cursor:pointer;" onclick={()=>{
                 toast("Esta funcionalidad no se encuentra disponible aún.", {position:"bottom-right"})}}><UserRound/>Clientes</Button>
             <Button variant="outline" style="cursor:pointer;" onclick={()=>{
                 toast("Esta funcionalidad no se encuentra disponible aún.", {position:"bottom-right"})}}><Box/>Proveedores</Button>
+            
+            {#if sale}
+                
             <Button variant="outline" style="cursor:pointer;" onclick={()=>{
                 toast("Esta funcionalidad no se encuentra disponible aún.", {position:"bottom-right"})}}><RefreshCcw/>Reembolso</Button>
+            
+            {/if}
+            <Button variant="outline" style="cursor:pointer;" onclick={()=>{
+                goto('#/inventory')
+                }}><Album/>Inventario</Button>
+
             <Button variant="outline" style="cursor:pointer;" onclick={()=>{
                 toast("Esta funcionalidad no se encuentra disponible aún.", {position:"bottom-right"})}}><CreditCard/>Metodos de pago</Button>
         </div>

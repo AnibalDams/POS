@@ -21,6 +21,9 @@
     import PayDone from "./payDone.svelte";
     import * as Tooltip from "$lib/components/ui/tooltip/index.js";
     import SaleReciept from "./SaleReciept.svelte";
+import AppBar from "./AppBar.svelte";
+
+    import {db} from '../utils/db'
 
     let nowDate;
 
@@ -168,7 +171,7 @@
         updatedSale.splice(productToDelete, 1);
         sale = updatedSale;
     }
-    function addPayment() {
+    async function addPayment() {
         let updatedPayments = [...payments];
         const paymentAmount = parseFloat(pay_amount_f); // Asegurarse de que es un número
 
@@ -207,9 +210,18 @@
         if (restSale < EPSILON) {
             // Si restSale es muy cercano a cero, considera que se ha pagado completamente
             preSale = sale;
-            
             nowDate = new Date();
             paid = true;
+            const dbSale= await db.sale.add({date:nowDate, paid:true, customerId:1, employeeId:1, total})
+            console.log(dbSale)
+            for(const product of sale){
+                await db.salesProducts.add({saleId:dbSale, productId:1, dateAdded:nowDate, amount:product.product.amount})
+            }
+            for (const payment of payments[1]) {
+                await db.salePayments.add({
+                    saleId:dbSale, date: payment.date, amount: payment.amount, type: payment.name,
+                })
+            }
             toast.success("¡Venta completada exitosamente!", {
                 position: "bottom-right",
             });
@@ -218,9 +230,36 @@
         console.log("Pagos:", payments);
         console.log("Restante por pagar:", restSale);
     }
+    async function saveSale(){
+        if (sale.length >0) {
+            nowDate = new Date();
+
+            const dbSale= await db.sale.add({date:nowDate, paid:false, customerId:1, employeeId:1, total})
+            console.log(dbSale)
+            for(const product of sale){
+                await db.salesProducts.add({saleId:dbSale, productId:1, dateAdded:nowDate, amount:product.product.amount})
+            }
+            if(payments[1].length>0){
+                for (const payment of payments[1]) {
+                      await db.salePayments.add({
+                    saleId:dbSale, date: payment.date, amount: payment.amount, type: payment.name,
+                })
+            }
+            }
+            payments = [{ amount: 0 }, []];
+            sale = []
+            toast.success(`La venta se ha guardado correctamente bajo el numero ${dbSale}`, {
+                position: "bottom-right"})
+        }else{
+            toast.error("No hay productos en la venta", {
+                position: "bottom-right"})
+        }
+    }
 </script>
 
 <Toaster />
+ <AppBar saveSale={saveSale} sale={true}/>
+
 <div class="sale">
     <div class="products">
         <div class="categories">
@@ -395,7 +434,7 @@
                 <Dialog.Content class="max-h-[90vh] overflow-auto">
                     <Dialog.Header>
                         <Dialog.Title
-                            >{!paid
+                        >{!paid
                                 ? "Procesar pago"
                                 : "Recibo de pago"}</Dialog.Title
                         >
@@ -507,7 +546,7 @@
                                 <div class="buttons">
                                     <Button
                                         style="cursor:pointer; width:100%;"
-                                        onclick={addPayment}
+                                        onclick={async()=>{await addPayment()}}
                                         disabled={pay_amount_f == 0 ||
                                             !pay_amount_f}
                                         ><BadgeCheck /> Agregar pago</Button
