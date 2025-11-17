@@ -36,9 +36,9 @@
 </script>
 <AppBar/>
 <div class="card_container">
+  <Card bgColor="#69b9fa7e" iconColor="blue"/>
   <Card/>
-  <Card/>
-  <Card/>
+  <Card bgColor="#fa69697e" iconColor="red"/>
 </div>
 <h1>hola</h1> <a href="#/">dasdsa</a>
 
