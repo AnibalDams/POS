@@ -1,6 +1,8 @@
 // db.js
 import Dexie from 'dexie';
 
+
+// Db initialization
 export const db:any = new Dexie('myDatabase');
 db.version(1).stores({
   sale:"id++, date, paid, customerId, employeeId, total",
