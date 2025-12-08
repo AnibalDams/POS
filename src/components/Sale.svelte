@@ -482,7 +482,7 @@ import AppBar from "./AppBar.svelte";
                                             >{Number(restSale).toFixed(
                                                 2,
                                             )}$</span
-                                        >
+                                        > 
                                     </div>
                                 </div>
                                 <div class="pays_done">
@@ -537,7 +537,7 @@ import AppBar from "./AppBar.svelte";
                                     >
                                     <InputGroup.Root>
                                         <InputGroup.Input
-                                            placeholder={total}
+                                            placeholder={restSale.toFixed(2)}
                                             type="number"
                                             bind:value={pay_amount_f}
                                         />
