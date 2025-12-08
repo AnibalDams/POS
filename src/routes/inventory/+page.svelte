@@ -5,7 +5,10 @@
   import Card from "./components/card.svelte";
   import * as Table from "$lib/components/ui/table/index.js";
   import Button from "$lib/components/ui/button/button.svelte";
-
+  import * as Dialog from "$lib/components/ui/dialog/index.js";
+  import { Input } from "$lib/components/ui/input/index.js";
+  import { Label } from "$lib/components/ui/label/index.js";
+  import { ChartLine } from "@lucide/svelte";
   export let defaultAge = 21;
 
   let status = "";
@@ -45,10 +48,78 @@
 <div class="table">
   <div class="title_button">
     <h1 style="font-weight: bold; ">Lista de productos</h1>
-    <Button>+ Crear producto</Button>
+    <Dialog.Root>
+      <Dialog.Trigger
+        ><Button style="cursor: pointer;">+ Crear producto</Button
+        ></Dialog.Trigger
+      >
+      <Dialog.Content>
+        <Dialog.Header>
+          <Dialog.Title>Crear producto</Dialog.Title>
+          <Dialog.Description>
+            Agrega un nuevo producto a la lista de productos
+          </Dialog.Description>
+        </Dialog.Header>
+        <div class="code_stock">
+          <div class="code">
+            <Label>codigo</Label>
+            <Input style="margin-top: 5px;" placeholder="codigo" />
+          </div>
+          <div class="stock">
+            <Label>stock</Label>
+            <Input style="margin-top: 5px;" placeholder="stock" type="number" />
+          </div>
+        </div>
+        <div class="name">
+          <Label>nombre</Label>
+          <Input style="margin-top: 5px;" placeholder="nombre" />
+        </div>
+        <div class="cost_price">
+          <div class="cost">
+            <Label>precio de compra</Label>
+            <Input
+              style="margin-top: 5px;"
+              placeholder="precio de compra"
+              type="number"
+            />
+          </div>
+
+          <div class="price">
+            <Label>precio de venta</Label>
+            <Input
+              style="margin-top: 5px;"
+              placeholder="precio de venta"
+              type="number"
+            />
+          </div>
+        </div>
+        <div class="benefit_container">
+          <span
+            style="display: flex; align-items: center; gap: 5px; color: #555;"
+          >
+            <ChartLine size="20" />Beneficios</span
+          >
+          <div class="benefit">
+            <div class="net_benefit">
+              <span class="title">Ganancia neta</span>
+              <span class="value" style="color: green;">3.00$</span>
+            </div>
+            <div class="cost_benefit">
+              <span class="title">% sobre costo</span>
+              <span class="value">3.00%</span>
+            </div>
+            <div class="profit">
+              <span class="title">% sobre precio</span>
+              <span class="value">3.00%</span>
+            </div>
+          </div>
+        </div>
+        <Dialog.Footer></Dialog.Footer>
+      </Dialog.Content>
+    </Dialog.Root>
   </div>
   <Table.Root>
-    <Table.Caption>A list of your recent invoices.</Table.Caption>
+    <Table.Caption>Lista de productos</Table.Caption>
     <Table.Header>
       <Table.Row>
         <Table.Head class="w-[100px]">Codigo</Table.Head>
@@ -75,8 +146,8 @@
     </Table.Body>
   </Table.Root>
 </div>
-<h1>hola</h1>
-<a href="#/">dasdsa</a>
+
+<a href="#/">Return home</a>
 
 <style>
   .card_container {
@@ -95,5 +166,53 @@
     align-items: center;
     margin-bottom: 20px;
     gap: 20px;
+  }
+
+  .cost_price {
+    display: flex;
+    gap: 20px;
+  }
+  .code_stock {
+    display: flex;
+    gap: 20px;
+  }
+  .benefit {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 20px;
+  }
+  .benefit_container {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    padding: 20px;
+  }
+  .benefit .net_benefit {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 2px;
+  }
+  .benefit .cost_benefit {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 2px;
+  }
+  .benefit .profit {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 2px;
+  }
+  .benefit .title {
+    color: #555;
+  }
+  .benefit .value {
+    font-weight: bold;
   }
 </style>
