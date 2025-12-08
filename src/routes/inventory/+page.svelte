@@ -1,49 +1,65 @@
-<script>
+<script lang="ts">
   import AppBar from "../../components/AppBar.svelte";
   import { db } from "../../utils/db";
   import { onMount } from "svelte";
   import Card from "./components/card.svelte";
   import * as Table from "$lib/components/ui/table/index.js";
-  import Button from "$lib/components/ui/button/button.svelte";
+  import Button, { buttonVariants } from "$lib/components/ui/button/button.svelte";
   import * as Dialog from "$lib/components/ui/dialog/index.js";
   import { Input } from "$lib/components/ui/input/index.js";
   import { Label } from "$lib/components/ui/label/index.js";
   import { ChartLine } from "@lucide/svelte";
-  export let defaultAge = 21;
+    import toast, { Toaster } from "svelte-french-toast";
+
+
+
 
   let status = "";
 
-  let friendName = "anibal";
-  let friendAge = defaultAge;
+  let newProduct = { cost: 0, price: 0, stock: 0, code: "", name: "" };
 
-  async function addFriend() {
-    try {
-      // Add the new friend!
-      const id = await db.friends.add({
-        name: friendName,
-        age: friendAge,
-      });
-
-      status = `Friend ${friendName} successfully added. Got id ${id}`;
-
-      // Reset form:
-      friendName = "";
-      friendAge = defaultAge;
-    } catch (error) {
-      status = `Failed to add ${friendName}: ${error}`;
-    }
+  $: costBenefit = newProduct.cost > 0 
+    ? Number(((Number(newProduct.price) - Number(newProduct.cost)) / Number(newProduct.cost)) * 100)
+    : 0;
+    
+  $: profit = newProduct.price > 0
+    ? Number(((Number(newProduct.price) - Number(newProduct.cost)) / Number(newProduct.price)) * 100)
+    : 0;
+  let products:any = [];
+  async function getProducts() {
+     products = await db.products.toArray();
   }
 
+  async function addProduct() {
+    try {
+      if (!newProduct.code || !newProduct.name) {
+        toast.error("El codigo y nombre son obligatorios");
+        return;
+      } else {
+        const id = await db.products.add({
+          ...newProduct,
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        });
+
+        toast.success(`Producto ${newProduct.name} agregado con exito. ID: ${id}`);
+        newProduct = { cost: 0, price: 0, stock: 0, code: "", name: "" };
+        await getProducts();
+      }
+    } catch (error) {
+      status = `Error al agregar el producto ${newProduct.name}: ${error}`;
+    }
+  }
   onMount(async () => {
-    // await addFriend()
+    await getProducts();
   });
 </script>
-
+<Toaster />
 <AppBar />
 <div class="card_container">
-  <Card bgColor="#69b9fa7e" iconColor="blue" />
-  <Card />
-  <Card bgColor="#fa69697e" iconColor="red" />
+  <Card bgColor="#69b9fa7e" iconColor="blue" number={products.length} title="Productos"/>
+
+  <Card title="Precio del inventario" number={products.reduce((sum,item)=>sum+(item.price*item.stock),0)+"$"}/>
 </div>
 <div class="table">
   <div class="title_button">
@@ -63,16 +79,29 @@
         <div class="code_stock">
           <div class="code">
             <Label>codigo</Label>
-            <Input style="margin-top: 5px;" placeholder="codigo" />
+            <Input
+              style="margin-top: 5px;"
+              placeholder="codigo"
+              bind:value={newProduct.code}
+            />
           </div>
           <div class="stock">
             <Label>stock</Label>
-            <Input style="margin-top: 5px;" placeholder="stock" type="number" />
+            <Input
+              style="margin-top: 5px;"
+              placeholder="stock"
+              type="number"
+              bind:value={newProduct.stock}
+            />
           </div>
         </div>
         <div class="name">
           <Label>nombre</Label>
-          <Input style="margin-top: 5px;" placeholder="nombre" />
+          <Input
+            style="margin-top: 5px;"
+            placeholder="nombre"
+            bind:value={newProduct.name}
+          />
         </div>
         <div class="cost_price">
           <div class="cost">
@@ -81,6 +110,7 @@
               style="margin-top: 5px;"
               placeholder="precio de compra"
               type="number"
+              bind:value={newProduct.cost}
             />
           </div>
 
@@ -90,6 +120,7 @@
               style="margin-top: 5px;"
               placeholder="precio de venta"
               type="number"
+              bind:value={newProduct.price}
             />
           </div>
         </div>
@@ -101,20 +132,28 @@
           >
           <div class="benefit">
             <div class="net_benefit">
-              <span class="title">Ganancia neta</span>
-              <span class="value" style="color: green;">3.00$</span>
+              <span class="title">Ganancia</span>
+              <span class="value" style="color: green;"
+                >{Number(Number(newProduct.price) - Number(newProduct.cost)).toFixed(2)}$</span
+              >
             </div>
             <div class="cost_benefit">
               <span class="title">% sobre costo</span>
-              <span class="value">3.00%</span>
+              <span class="value">{costBenefit.toFixed(2)}%</span>
             </div>
             <div class="profit">
               <span class="title">% sobre precio</span>
-              <span class="value">3.00%</span>
+              <span class="value">{profit.toFixed(2)}%</span>
             </div>
           </div>
         </div>
-        <Dialog.Footer></Dialog.Footer>
+        <Dialog.Footer>
+          <Dialog.Close  style="cursor:pointer; "
+                                        class={buttonVariants({
+                                            variant: "outline",
+                                        })}>Cancelar</Dialog.Close>
+          <Button variant="default" onclick={addProduct} style="cursor:pointer;" >Agregar producto</Button>
+        </Dialog.Footer>
       </Dialog.Content>
     </Dialog.Root>
   </div>
@@ -133,16 +172,22 @@
       </Table.Row>
     </Table.Header>
     <Table.Body>
+       {#each products as product}
       <Table.Row>
-        <Table.Cell class="font-medium">INV001</Table.Cell>
-        <Table.Cell>Paid</Table.Cell>
-        <Table.Cell>Credit Card</Table.Cell>
-        <Table.Cell class="text-end">$250.00</Table.Cell>
-        <Table.Cell class="text-end">24/11/2025</Table.Cell>
-        <Table.Cell class="text-end">24/11/2025</Table.Cell>
+       
+           <Table.Cell class="font-medium">{product.code}</Table.Cell>
+        <Table.Cell>{product.name}</Table.Cell>
+        <Table.Cell style="font-weight:bold;">{product.stock}</Table.Cell>
+        <Table.Cell class="text-end" style="font-weight:bold;">${product.price}</Table.Cell>
+        <Table.Cell class="text-end">{product.createdAt}</Table.Cell>
+        <Table.Cell class="text-end">{
+      product.updatedAt}</Table.Cell>
         <Table.Cell class="text-end">Anibal</Table.Cell>
         <Table.Cell class="text-end">Jose</Table.Cell>
+    
+        
       </Table.Row>
+          {/each}
     </Table.Body>
   </Table.Root>
 </div>

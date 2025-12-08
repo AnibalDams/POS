@@ -5,16 +5,18 @@
 
     export let iconColor ="green"
     export let bgColor = "#69faaa7e"
+    export let number 
+    export let title = ""
 </script>
 
 
 <Card.Root class="w-68">
     <Card.Header>
-        <span style="color: #555;">Total Products</span>
+        <span style="color: #555;">{title}</span>
     </Card.Header>
     <Card.Content >
         <div class="content" >
-        <span class="font-bold" style="font-size: 30px;">2</span>
+        <span class="font-bold" style="font-size: 30px;">{number}</span>
         <div class="icon" style={`background-color:${bgColor} ;`}><Box color={iconColor}/></div>
         </div>
 
