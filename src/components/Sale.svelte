@@ -52,6 +52,7 @@
 
     let products = [
         {
+            id: 0,
             name: "",
             code: "",
             image: "",
@@ -70,7 +71,7 @@
     let IVA = 0;
     let total = 0;
     let preSale = [];
-    let sale = [];
+    let sale:any = [];
     let paid = false;
     let payments: any = [{ amount: 0 }, []];
     $: subtotal = sale.reduce(
@@ -95,7 +96,7 @@
     }
 
     // Función para añadir o actualizar un producto en la venta
-    function addOrUpdateProduct(productToAdd) {
+    function addOrUpdateProduct(productToAdd:typeof products[0]) {
         let found = false;
         // Creamos una copia del array para poder reasignarlo
         let updatedSale = [...sale];
@@ -137,7 +138,7 @@
         // Reasignamos la variable sale para que Svelte detecte el cambio
         sale = updatedSale;
     }
-    function updateAmount(productToUpdate, type) {
+    function updateAmount(productToUpdate:number, type:string) {
         let updatedSale = [...sale];
         let saleProductIndex = updatedSale.findIndex(
             (e) => e.product.id === productToUpdate,
