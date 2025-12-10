@@ -2,7 +2,7 @@
     import { Trash, Minus, Plus } from "@lucide/svelte";
     import { Button } from "$lib/components/ui/button/index.js";
     import * as ButtonGroup from "$lib/components/ui/button-group/index.js";
-    export let index;
+    export let id;
     export let name = "";
     export let count = 1;
     export let price = 13;
@@ -34,7 +34,7 @@
                 style="cursor:pointer;"
                 onclick={() => {
                     count == 1 ? (count = 1) : count--;
-                    updateAmount(index, "-");
+                    updateAmount(id, "-");
                 }}><Minus /></Button
             >
             <span style="font-weight: bold;">{count}</span>
@@ -43,7 +43,7 @@
                 style="cursor:pointer;"
                 onclick={() => {
                     count == stock ? (count = stock) : count++;
-                    updateAmount(index, "+");
+                    updateAmount(id, "+");
                 }}><Plus /></Button
             >
         </ButtonGroup.Root>

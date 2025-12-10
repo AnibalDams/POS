@@ -177,7 +177,7 @@
        
            <Table.Cell class="font-medium">{product.code}</Table.Cell>
         <Table.Cell>{product.name}</Table.Cell>
-        <Table.Cell style="font-weight:bold;">{product.stock}</Table.Cell>
+        <Table.Cell style={`font-weight:bold;${product.stock==0?"color:#eb4034;":""}`}>{product.stock}</Table.Cell>
         <Table.Cell class="text-end" style="font-weight:bold;">${product.price}</Table.Cell>
         <Table.Cell class="text-end">{product.createdAt}</Table.Cell>
         <Table.Cell class="text-end">{

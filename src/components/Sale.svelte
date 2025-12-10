@@ -1,10 +1,9 @@
-<script>
+<script lang="ts">
     import ProductCard from "./ProductCard.svelte";
     import {
         BadgeCheck,
         Plus,
         ShoppingCart,
-        
         UserRound,
         X,
     } from "@lucide/svelte";
@@ -21,9 +20,10 @@
     import PayDone from "./payDone.svelte";
     import * as Tooltip from "$lib/components/ui/tooltip/index.js";
     import SaleReciept from "./SaleReciept.svelte";
-import AppBar from "./AppBar.svelte";
+    import AppBar from "./AppBar.svelte";
 
-    import {db} from '../utils/db'
+    import { db } from "../utils/db";
+    import { onMount } from "svelte";
 
     let nowDate;
 
@@ -52,36 +52,11 @@ import AppBar from "./AppBar.svelte";
 
     let products = [
         {
-            name: "Airpods",
-            code: "arpd",
-            image: "https://m.media-amazon.com/images/I/61CmrrKebAL.jpg",
-            price: 24,
-            stock: 20,
-        },
-        {
-            name: "Samsung Galaxy s22",
-            code: "smgs22",
-            image: "https://images.samsung.com/is/image/samsung/p6pim/ar/sm-s731bzwmaro/gallery/ar-galaxy-s25-fe-sm-s731-sm-s731bzwmaro-thumb-549272976",
-            price: 240,
-            stock: 12,
-        },
-        {
-            name: "Lpunto plus",
-            image: "https://www.latin-pagos.com/web/image/427640-4fe4d9e5/003.jpg",
-            price: 240,
-            stock: 50,
-        },
-        {
-            name: "Lpunto pro",
-            image: "https://www.latin-pagos.com/web/image/427644-8a73fe61/004.jpg",
-            price: 120,
-            stock: 38,
-        },
-        {
-            name: "Lluvia de chocolate",
+            name: "",
+            code: "",
             image: "",
-            price: 7.5,
-            stock: 14,
+            price: 0,
+            stock: 0,
         },
     ];
     let paymMedthod = [
@@ -97,7 +72,7 @@ import AppBar from "./AppBar.svelte";
     let preSale = [];
     let sale = [];
     let paid = false;
-    let payments = [{ amount: 0 }, []];
+    let payments: any = [{ amount: 0 }, []];
     $: subtotal = sale.reduce(
         (sum, item) => sum + item.product.price * item.amount,
         0,
@@ -114,16 +89,33 @@ import AppBar from "./AppBar.svelte";
             restSale = total - payments[0].amount;
         }
     }
+
+    async function fetchProducts() {
+        products = await db.products.toArray();
+    }
+
     // Función para añadir o actualizar un producto en la venta
     function addOrUpdateProduct(productToAdd) {
         let found = false;
         // Creamos una copia del array para poder reasignarlo
         let updatedSale = [...sale];
-
+        let productIndex = products.findIndex((e) => e.id === productToAdd.id);
+        if (products[productIndex].stock === 0) {
+            toast.error("No hay mas stock disponible de este producto.", {
+                position: "bottom-right",
+            });
+            return;
+        }
         for (let i = 0; i < updatedSale.length; i++) {
             const element = updatedSale[i];
+            const productIndex = products.findIndex(
+                (e) => e.id === element.product.id,
+            );
             if (element.product.name === productToAdd.name) {
-                if (element.amount >= element.product.stock) {
+                if (
+                    element.amount >= element.product.stock ||
+                    products[productIndex].stock === 0
+                ) {
                     toast.error(
                         "No hay mas stock disponible de este producto.",
                         {
@@ -147,22 +139,29 @@ import AppBar from "./AppBar.svelte";
     }
     function updateAmount(productToUpdate, type) {
         let updatedSale = [...sale];
+        let saleProductIndex = updatedSale.findIndex(
+            (e) => e.product.id === productToUpdate,
+        );
+        let productIndex = products.findIndex(
+            (e) => e.id === productToUpdate,
+        );
 
         if (type == "+") {
             if (
-                updatedSale[productToUpdate].amount >=
-                updatedSale[productToUpdate].product.stock
+                updatedSale[saleProductIndex].amount >=
+                    updatedSale[saleProductIndex].product.stock ||
+                products[productIndex].stock === 0
             ) {
                 toast.error("No hay mas stock disponible de este producto.", {
                     position: "bottom-right",
                 });
             } else {
-                updatedSale[productToUpdate].amount++;
+                updatedSale[saleProductIndex].amount++;
             }
         } else {
-            updatedSale[productToUpdate].amount == 1
+            updatedSale[saleProductIndex].amount == 1
                 ? 1
-                : updatedSale[productToUpdate].amount--;
+                : updatedSale[saleProductIndex].amount--;
         }
         sale = updatedSale;
     }
@@ -212,15 +211,33 @@ import AppBar from "./AppBar.svelte";
             preSale = sale;
             nowDate = new Date();
             paid = true;
-            const dbSale= await db.sale.add({date:nowDate, paid:true, customerId:1, employeeId:1, total})
-            console.log(dbSale)
-            for(const product of sale){
-                await db.salesProducts.add({saleId:dbSale, productId:1, dateAdded:nowDate, amount:product.product.amount})
+            const dbSale = await db.sale.add({
+                date: nowDate,
+                paid: true,
+                customerId: 1,
+                employeeId: 1,
+                total,
+            });
+            console.log(dbSale);
+            for (const product of sale) {
+                await db.products.update(product.product.id, {
+                    stock: product.product.stock - product.amount,
+                });
+                await db.salesProducts.add({
+                    saleId: dbSale,
+                    productId: 1,
+                    dateAdded: nowDate,
+                    amount: product.product.amount,
+                });
+                await fetchProducts();
             }
             for (const payment of payments[1]) {
                 await db.salePayments.add({
-                    saleId:dbSale, date: payment.date, amount: payment.amount, type: payment.name,
-                })
+                    saleId: dbSale,
+                    date: payment.date,
+                    amount: payment.amount,
+                    type: payment.name,
+                });
             }
             toast.success("¡Venta completada exitosamente!", {
                 position: "bottom-right",
@@ -230,35 +247,63 @@ import AppBar from "./AppBar.svelte";
         console.log("Pagos:", payments);
         console.log("Restante por pagar:", restSale);
     }
-    async function saveSale(){
-        if (sale.length >0) {
+    async function saveSale() {
+        if (sale.length > 0) {
             nowDate = new Date();
 
-            const dbSale= await db.sale.add({date:nowDate, paid:false, customerId:1, employeeId:1, total})
-            console.log(dbSale)
-            for(const product of sale){
-                await db.salesProducts.add({saleId:dbSale, productId:1, dateAdded:nowDate, amount:product.product.amount})
+            const dbSale = await db.sale.add({
+                date: nowDate,
+                paid: false,
+                customerId: 1,
+                employeeId: 1,
+                total,
+            });
+            console.log(dbSale);
+            for (const product of sale) {
+                console.log(product);
+                await db.products.update(product.product.id, {
+                    stock: product.product.stock - product.amount,
+                });
+                await db.salesProducts.add({
+                    saleId: dbSale,
+                    productId: 1,
+                    dateAdded: nowDate,
+                    amount: product.product.amount,
+                });
             }
-            if(payments[1].length>0){
+            if (payments[1].length > 0) {
                 for (const payment of payments[1]) {
-                      await db.salePayments.add({
-                    saleId:dbSale, date: payment.date, amount: payment.amount, type: payment.name,
-                })
-            }
+                    await db.salePayments.add({
+                        saleId: dbSale,
+                        date: payment.date,
+                        amount: payment.amount,
+                        type: payment.name,
+                    });
+                }
             }
             payments = [{ amount: 0 }, []];
-            sale = []
-            toast.success(`La venta se ha guardado correctamente bajo el numero ${dbSale}`, {
-                position: "bottom-right"})
-        }else{
+            sale = [];
+            await fetchProducts();
+            toast.success(
+                `La venta se ha guardado correctamente bajo el numero ${dbSale}`,
+                {
+                    position: "bottom-right",
+                },
+            );
+        } else {
             toast.error("No hay productos en la venta", {
-                position: "bottom-right"})
+                position: "bottom-right",
+            });
         }
     }
+
+    onMount(async () => {
+        await fetchProducts();
+    });
 </script>
 
 <Toaster />
- <AppBar saveSale={saveSale} sale={true}/>
+<AppBar {saveSale} sale={true} />
 
 <div class="sale">
     <div class="products">
@@ -344,9 +389,9 @@ import AppBar from "./AppBar.svelte";
                 <!-- Verifica la longitud del array -->
                 <NoSale />
             {:else}
-                {#each sale as productSale, index}
+                {#each sale as productSale}
                     <SaleProcducCard
-                        {index}
+                        id={productSale.product.id}
                         {deleteProduct}
                         {updateAmount}
                         count={productSale.amount}
@@ -434,7 +479,7 @@ import AppBar from "./AppBar.svelte";
                 <Dialog.Content class="max-h-[90vh] overflow-auto">
                     <Dialog.Header>
                         <Dialog.Title
-                        >{!paid
+                            >{!paid
                                 ? "Procesar pago"
                                 : "Recibo de pago"}</Dialog.Title
                         >
@@ -482,7 +527,7 @@ import AppBar from "./AppBar.svelte";
                                             >{Number(restSale).toFixed(
                                                 2,
                                             )}$</span
-                                        > 
+                                        >
                                     </div>
                                 </div>
                                 <div class="pays_done">
@@ -546,7 +591,9 @@ import AppBar from "./AppBar.svelte";
                                 <div class="buttons">
                                     <Button
                                         style="cursor:pointer; width:100%;"
-                                        onclick={async()=>{await addPayment()}}
+                                        onclick={async () => {
+                                            await addPayment();
+                                        }}
                                         disabled={pay_amount_f == 0 ||
                                             !pay_amount_f}
                                         ><BadgeCheck /> Agregar pago</Button
@@ -566,16 +613,15 @@ import AppBar from "./AppBar.svelte";
                                     IVA={Number(IVA).toFixed(2)}
                                     products={sale}
                                     payments={payments[1]}
-                                    onFinish={()=>{
-                                        sale=[]
-                                        total=0
-                                        IVA=0
-                                        subtotal=0
-                                        payments= [{amount:0},[]],
-                                        paid=false
-                                        restSale=0
-                                        nowDate=new Date()
-
+                                    onFinish={() => {
+                                        sale = [];
+                                        total = 0;
+                                        IVA = 0;
+                                        subtotal = 0;
+                                        (payments = [{ amount: 0 }, []]),
+                                            (paid = false);
+                                        restSale = 0;
+                                        nowDate = new Date();
                                     }}
                                 />
                             {/if}

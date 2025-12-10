@@ -13,7 +13,7 @@
 <div class="product" on:click={onclick}>
 <Card.Root >
     <Card.Header>
-        {#if imgsrc ===""}
+        {#if imgsrc ==="" || !imgsrc}
             <div style="display: flex; justify-content: center; align-items: center; width: 200px; height: 200px; ">
                 <Box color="#333" size={48}/>
             </div>
