@@ -160,9 +160,7 @@
             variant="outline"
             style="cursor:pointer;"
             onclick={() => {
-                toast("Esta funcionalidad no se encuentra disponible aún.", {
-                    position: "bottom-right",
-                });
+                goto("#/dashboard");
             }}><LayoutDashboard />Dashboard</Button
         >
     </div>

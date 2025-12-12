@@ -71,7 +71,7 @@
     let IVA = 0;
     let total = 0;
     let preSale = [];
-    let sale:any = [];
+    let sale: any = [];
     let paid = false;
     let payments: any = [{ amount: 0 }, []];
     $: subtotal = sale.reduce(
@@ -82,6 +82,7 @@
     $: total = subtotal + IVA;
     let restSale = Number(total);
     let pay_amount_f = total;
+    let saleId = 0;
     $: {
         restSale = total;
         nowDate = new Date();
@@ -96,7 +97,7 @@
     }
 
     // Función para añadir o actualizar un producto en la venta
-    function addOrUpdateProduct(productToAdd:typeof products[0]) {
+    function addOrUpdateProduct(productToAdd: (typeof products)[0]) {
         let found = false;
         // Creamos una copia del array para poder reasignarlo
         let updatedSale = [...sale];
@@ -138,14 +139,12 @@
         // Reasignamos la variable sale para que Svelte detecte el cambio
         sale = updatedSale;
     }
-    function updateAmount(productToUpdate:number, type:string) {
+    function updateAmount(productToUpdate: number, type: string) {
         let updatedSale = [...sale];
         let saleProductIndex = updatedSale.findIndex(
             (e) => e.product.id === productToUpdate,
         );
-        let productIndex = products.findIndex(
-            (e) => e.id === productToUpdate,
-        );
+        let productIndex = products.findIndex((e) => e.id === productToUpdate);
 
         if (type == "+") {
             if (
@@ -209,9 +208,9 @@
 
         if (restSale < EPSILON) {
             // Si restSale es muy cercano a cero, considera que se ha pagado completamente
+
             preSale = sale;
             nowDate = new Date();
-            paid = true;
             const dbSale = await db.sale.add({
                 date: nowDate,
                 paid: true,
@@ -219,7 +218,9 @@
                 employeeId: 1,
                 total,
             });
-            console.log(dbSale);
+            saleId = dbSale;
+
+            paid = true;
             for (const product of sale) {
                 await db.products.update(product.product.id, {
                     stock: product.product.stock - product.amount,
@@ -608,6 +609,7 @@
                                 </div>
                             {:else}
                                 <SaleReciept
+                                    {saleId}
                                     date={formattedDate}
                                     total={Number(total).toFixed(2)}
                                     subtotal={Number(subtotal).toFixed(2)}
