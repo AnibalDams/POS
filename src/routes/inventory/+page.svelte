@@ -16,7 +16,7 @@
 
   let status = "";
 
-  let newProduct = { cost: 0, price: 0, stock: 0, code: "", name: "" };
+  let newProduct = { cost: 0, price: 0, stock: 0, code: "", name: "", profit:0 };
 
   $: costBenefit = newProduct.cost > 0 
     ? Number(((Number(newProduct.price) - Number(newProduct.cost)) / Number(newProduct.cost)) * 100)
@@ -25,6 +25,8 @@
   $: profit = newProduct.price > 0
     ? Number(((Number(newProduct.price) - Number(newProduct.cost)) / Number(newProduct.price)) * 100)
     : 0;
+    $: newProduct.profit = newProduct.price - newProduct.cost;
+
   let products:any = [];
   async function getProducts() {
      products = await db.products.toArray();

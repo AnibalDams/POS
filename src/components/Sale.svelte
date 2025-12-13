@@ -217,6 +217,10 @@
                 customerId: 1,
                 employeeId: 1,
                 total,
+                profit: sale.reduce(
+                    (sum, item) => sum + item.product.profit * item.amount,
+                    0,
+                )
             });
             saleId = dbSale;
 
