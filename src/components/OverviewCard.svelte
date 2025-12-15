@@ -1,34 +1,42 @@
-<script>
-    import { ChevronUp, ChartLine } from "@lucide/svelte";
+<script lang="ts">
+    import { ChevronUp, ChartLine, Album } from "@lucide/svelte";
+    export let amount  =""
+    type variant = "primary"|"secondary"
+    export let title =""
+    export let variant:variant = "secondary"
 </script>
 
-<div class="card">
+        
+<div class="card" style={`background-color: ${variant=="primary"?"rgba(0, 255, 136, 0.233)":variant=="secondary"?"rgba(17, 157, 164, 0.233)":""};`}>
     <div class="top">
-        <div class="icon_container">
-            <ChartLine color="#00a85a" />
+        <div class="icon_container" style={`background-color: ${variant=="primary"?"#00ff883b":variant=="secondary"?"rgba(25, 239, 250, 0.233)":""};`}>
+           {#if variant=="secondary"}
+             <Album color="#119da4"/>
+
+            {:else}
+             <ChartLine color={variant=="primary"?"#00a85a":variant=="secondary"?"#fc5417":""} />
+           {/if}
         </div>
         <div class="text">
-            <span class="amount">$20500</span>
-            <span class="title">Total de ventas</span>
+            <span class="amount">{amount}</span>
+            <span class="title">{title}</span>
         </div>
     </div>
-    <div class="bottom">
+    <!-- <div class="bottom">
         <div class="percentage">
             <ChevronUp size={"16px"} />
             <span>20%</span>
         </div>
         <span style="color: #555;">Comparado con ayer</span>
-    </div>
+    </div> -->
 </div>
 
 <style>
     div.card {
         padding: 20px;
-        height: 125px;
+        height: 100px;
         width: 300px;
-        background-color: rgba(0, 255, 136, 0.233);
         border-radius: 10px;
-        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
     }
     div.card div.top {
         display: flex;
@@ -39,7 +47,7 @@
     div.card div.top div.icon_container {
         width: 50px;
         height: 50px;
-        background-color: #00ff883b;
+        
         border-radius: 10px;
         display: flex;
         justify-content: center;
@@ -60,7 +68,7 @@
         color: #555;
         font-size: 13px;
     }
-    div.card div.bottom {
+    /* div.card div.bottom {
         margin-top: 10px;
         display: flex;
         justify-content: flex-start;
@@ -74,5 +82,5 @@
         align-items: center;
         color: green;
         font-weight: bold;
-    }
+    } */
 </style>

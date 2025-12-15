@@ -26,9 +26,7 @@
         { month: "", amount: 0, profit: 0 },
 
     ];
-    onMount(()=>{
-        console.log(chartData)
-    }) 
+
     const chartConfig = {
         amount: { label: "Monto", color: "#111111" },
         profit: { label: "Ganancia", color: "#555555" },

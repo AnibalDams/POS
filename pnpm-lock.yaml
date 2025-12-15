@@ -19,9 +19,6 @@ importers:
       '@types/d3-shape':
         specifier: ^3.1.7
         version: 3.1.7
-      bits-ui:
-        specifier: ^2.14.1
-        version: 2.14.1(@internationalized/date@3.10.0)(@sveltejs/kit@2.21.1(patch_hash=0334854e16bbcbf885cfe7e5b64ad53469f91248bd8bd4d27fc6365f6a564f76)(@sveltejs/vite-plugin-svelte@5.0.3(svelte@5.32.1)(vite@6.3.5(@types/node@22.15.20)(jiti@2.4.2)(lightningcss@1.30.1)))(svelte@5.32.1)(vite@6.3.5(@types/node@22.15.20)(jiti@2.4.2)(lightningcss@1.30.1)))(svelte@5.32.1)
       d3:
         specifier: ^7.9.0
         version: 7.9.0
@@ -75,8 +72,8 @@ importers:
         specifier: ^3.10.0
         version: 3.10.0
       '@lucide/svelte':
-        specifier: ^0.544.0
-        version: 0.544.0(svelte@5.32.1)
+        specifier: ^0.561.0
+        version: 0.561.0(svelte@5.32.1)
       '@playwright/test':
         specifier: ^1.49.1
         version: 1.52.0
@@ -110,6 +107,9 @@ importers:
       '@types/node':
         specifier: ^22
         version: 22.15.20
+      bits-ui:
+        specifier: ^2.14.4
+        version: 2.14.4(@internationalized/date@3.10.0)(@sveltejs/kit@2.21.1(patch_hash=0334854e16bbcbf885cfe7e5b64ad53469f91248bd8bd4d27fc6365f6a564f76)(@sveltejs/vite-plugin-svelte@5.0.3(svelte@5.32.1)(vite@6.3.5(@types/node@22.15.20)(jiti@2.4.2)(lightningcss@1.30.1)))(svelte@5.32.1)(vite@6.3.5(@types/node@22.15.20)(jiti@2.4.2)(lightningcss@1.30.1)))(svelte@5.32.1)
       clsx:
         specifier: ^2.1.1
         version: 2.1.1
@@ -550,8 +550,8 @@ packages:
   '@layerstack/utils@2.0.0-next.12':
     resolution: {integrity: sha512-fhGZUlSr3N+D44BYm37WKMGSEFyZBW+dwIqtGU8Cl54mR4TLQ/UwyGhdpgIHyH/x/8q1abE0fP0Dn6ZsrDE3BA==}
 
-  '@lucide/svelte@0.544.0':
-    resolution: {integrity: sha512-9f9O6uxng2pLB01sxNySHduJN3HTl5p0HDu4H26VR51vhZfiMzyOMe9Mhof3XAk4l813eTtl+/DYRvGyoRR+yw==}
+  '@lucide/svelte@0.561.0':
+    resolution: {integrity: sha512-vofKV2UFVrKE6I4ewKJ3dfCXSV6iP6nWVmiM83MLjsU91EeJcEg7LoWUABLp/aOTxj1HQNbJD1f3g3L0JQgH9A==}
     peerDependencies:
       svelte: ^5
 
@@ -1039,8 +1039,8 @@ packages:
   base64-js@1.5.1:
     resolution: {integrity: sha512-AKpaYlHn8t4SVbOHCy+b5+KKgvR4vrsD8vbvrbiQJps7fKDTkjkDry6ji0rUJjC0kzbNePLwzxq8iypo41qeWA==}
 
-  bits-ui@2.14.1:
-    resolution: {integrity: sha512-FkQTBDF+BLh5fgwioi04JJD8kpsQ+pVjPwzxUYYd39pYR0uKAyMLmoKo3EAWJIszV7fjTv1ZiNzxTkpGutJ32w==}
+  bits-ui@2.14.4:
+    resolution: {integrity: sha512-W6kenhnbd/YVvur+DKkaVJ6GldE53eLewur5AhUCqslYQ0vjZr8eWlOfwZnMiPB+PF5HMVqf61vXBvmyrAmPWg==}
     engines: {node: '>=20'}
     peerDependencies:
       '@internationalized/date': ^3.8.1
@@ -4011,7 +4011,7 @@ snapshots:
       d3-time-format: 4.1.0
       lodash-es: 4.17.21
 
-  '@lucide/svelte@0.544.0(svelte@5.32.1)':
+  '@lucide/svelte@0.561.0(svelte@5.32.1)':
     dependencies:
       svelte: 5.32.1
 
@@ -4468,7 +4468,7 @@ snapshots:
 
   base64-js@1.5.1: {}
 
-  bits-ui@2.14.1(@internationalized/date@3.10.0)(@sveltejs/kit@2.21.1(patch_hash=0334854e16bbcbf885cfe7e5b64ad53469f91248bd8bd4d27fc6365f6a564f76)(@sveltejs/vite-plugin-svelte@5.0.3(svelte@5.32.1)(vite@6.3.5(@types/node@22.15.20)(jiti@2.4.2)(lightningcss@1.30.1)))(svelte@5.32.1)(vite@6.3.5(@types/node@22.15.20)(jiti@2.4.2)(lightningcss@1.30.1)))(svelte@5.32.1):
+  bits-ui@2.14.4(@internationalized/date@3.10.0)(@sveltejs/kit@2.21.1(patch_hash=0334854e16bbcbf885cfe7e5b64ad53469f91248bd8bd4d27fc6365f6a564f76)(@sveltejs/vite-plugin-svelte@5.0.3(svelte@5.32.1)(vite@6.3.5(@types/node@22.15.20)(jiti@2.4.2)(lightningcss@1.30.1)))(svelte@5.32.1)(vite@6.3.5(@types/node@22.15.20)(jiti@2.4.2)(lightningcss@1.30.1)))(svelte@5.32.1):
     dependencies:
       '@floating-ui/core': 1.7.3
       '@floating-ui/dom': 1.7.4

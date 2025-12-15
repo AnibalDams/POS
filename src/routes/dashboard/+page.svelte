@@ -4,6 +4,7 @@
     import SaleChart from "../../components/SaleChart.svelte";
     import { db } from "../../utils/db";
     import { onMount } from "svelte";
+    import PaymentMethodChart from "./components/paymentMethodChart.svelte";
 
 
     let sales=[]
@@ -30,9 +31,9 @@
             if (!isNaN(date.getTime())) {
                 const monthIndex = date.getMonth();
                 // Verificación de seguridad
-                if (cleanData[monthIndex-1]) {
-                    cleanData[monthIndex-1].amount += sale.total;
-                    cleanData[monthIndex-1].profit += sale.profit;
+                if (cleanData[monthIndex]) {
+                    cleanData[monthIndex].amount += sale.total;
+                    cleanData[monthIndex].profit += sale.profit;
                 }
             }
         }
@@ -47,14 +48,15 @@
 
 <div class="container">
     <div class="left_side">
-        <OverviewCard />
-        <OverviewCard />
-        <OverviewCard />
+        <OverviewCard title="Ventas totales" amount={`$${monthlySalesData.reduce((acc, sale) => acc + sale.amount, 0).toFixed(2)}`} variant="primary"/>
+        <OverviewCard title="Ganancia total" amount={`$${monthlySalesData.reduce((acc, sale) => acc + sale.profit, 0).toFixed(2)}`} variant="primary"/>
+        <OverviewCard title="Ordenes totales" amount={`${sales.length}`} variant="secondary"/>
     </div>
     <div class="right_side">
         <SaleChart chartData={monthlySalesData}/>
     </div>
 </div>
+<PaymentMethodChart/>
 <a href="#/">inicio</a>
 
 <style>
@@ -69,6 +71,8 @@
         display: flex;
         width: 350px;
         flex-direction: column;
+        align-items: center;
+        justify-content: center;
         gap: 20px;
     }
     div.container div.right_side {
