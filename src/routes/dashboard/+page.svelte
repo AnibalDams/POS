@@ -48,9 +48,9 @@
 
 <div class="container">
     <div class="left_side">
-        <OverviewCard title="Ventas totales" amount={`$${monthlySalesData.reduce((acc, sale) => acc + sale.amount, 0).toFixed(2)}`} variant="primary"/>
-        <OverviewCard title="Ganancia total" amount={`$${monthlySalesData.reduce((acc, sale) => acc + sale.profit, 0).toFixed(2)}`} variant="primary"/>
-        <OverviewCard title="Ordenes totales" amount={`${sales.length}`} variant="secondary"/>
+        <OverviewCard title="Ventas totales" currency={true} amount={monthlySalesData.reduce((acc, sale) => acc + sale.amount, 0).toFixed(2)} variant="primary"/>
+        <OverviewCard title="Ganancia total" currency={true} amount={monthlySalesData.reduce((acc, sale) => acc + sale.profit, 0).toFixed(2)} variant="primary"/>
+        <OverviewCard title="Ordenes totales" currency={false} amount={sales.length} variant="secondary"/>
     </div>
     <div class="right_side">
         <SaleChart chartData={monthlySalesData}/>

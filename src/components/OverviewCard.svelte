@@ -1,9 +1,15 @@
 <script lang="ts">
     import { ChevronUp, ChartLine, Album } from "@lucide/svelte";
-    export let amount  =""
+    export let amount  =0
+    export let currency = true
     type variant = "primary"|"secondary"
     export let title =""
     export let variant:variant = "secondary"
+    $: formatAmount = new Intl.NumberFormat('es-ES', {
+    style: 'currency',
+    currency: 'USD',
+    minimumFractionDigits: 2,
+  }).format(amount);
 </script>
 
         
@@ -18,7 +24,7 @@
            {/if}
         </div>
         <div class="text">
-            <span class="amount">{amount}</span>
+            <span class="amount">{currency?formatAmount:amount}</span>
             <span class="title">{title}</span>
         </div>
     </div>
