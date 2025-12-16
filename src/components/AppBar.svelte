@@ -20,6 +20,7 @@
         LayoutDashboard,
         BanknoteArrowDown,
         Save,
+        BookUser,
     } from "@lucide/svelte";
     import { goto } from "$app/navigation";
 
@@ -149,11 +150,18 @@
                 variant="outline"
                 style="cursor:pointer;"
                 onclick={() => {
+                    goto("#/paymentMethods");
+                }}><CreditCard />Metodos de pago</Button
+            >
+             <Button
+                variant="outline"
+                style="cursor:pointer;"
+                onclick={() => {
                     toast(
                         "Esta funcionalidad no se encuentra disponible aún.",
                         { position: "bottom-right" },
                     );
-                }}><CreditCard />Metodos de pago</Button
+                }}><BookUser />Reportes</Button
             >
         </div>
         <Button

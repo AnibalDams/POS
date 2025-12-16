@@ -17,12 +17,12 @@
 
   const chartConfig = {
     desktop: { label: "Desktop" },
-    january: { label: "January", color: "var(--chart-1)" },
-    february: { label: "February", color: "var(--chart-2)" },
-    march: { label: "March", color: "var(--chart-3)" },
-    april: { label: "April", color: "var(--chart-4)" },
-    may: { label: "May", color: "var(--chart-5)" },
-    jun: { label: "Jun", color: "blue" },
+    january: { label: "January", color: "#111111" },
+    february: { label: "February", color: "#222222" },
+    march: { label: "March", color: "#333333" },
+    april: { label: "April", color: "#444444" },
+    may: { label: "May", color: "#555555" },
+    jun: { label: "Jun", color: "#666666" },
   } satisfies Chart.ChartConfig;
 
   let activeMonth = $state(desktopData[0].month);
@@ -38,8 +38,8 @@
  
   <Card.Header class="flex flex-row items-start space-y-0 pb-0">
     <div class="grid gap-1">
-      <Card.Title>Pie Chart - Interactive</Card.Title>
-      <Card.Description>January - June 2024</Card.Description>
+      <Card.Title>Medios de pagos más utilizados</Card.Title>
+      <Card.Description>Datos de este mes</Card.Description>
     </div>
     <Select.Root type="single" bind:value={activeMonth}>
       <Select.Trigger
