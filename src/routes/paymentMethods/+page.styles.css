@@ -1,0 +1,31 @@
+    div.header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin:20px;
+    }
+    div.amount_of_methods {
+        display: flex;
+        gap: 10px;
+    }
+    div.item{
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 5px;
+    
+        padding: 10px;
+    }
+    div.item span.number {
+        font-size: 4vh;
+        font-weight: bold;
+    }
+    div.item span.number.active{
+        color:rgb(0, 117, 0);
+    }
+    div.item span.title {
+        font-size: 1.8vh;
+        color:#888;
+    }
+
+    
